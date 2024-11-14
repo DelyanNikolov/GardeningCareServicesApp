@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    "GardeningCareServicesApp.accounts.apps.AccountsConfig"
+    "GardeningCareServicesApp.accounts.apps.AccountsConfig",
+    "GardeningCareServicesApp.services.apps.ServicesConfig"
 ]
 
 MIDDLEWARE = [
