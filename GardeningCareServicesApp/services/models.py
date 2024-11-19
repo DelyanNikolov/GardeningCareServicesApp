@@ -103,4 +103,5 @@ class Review(models.Model):
         return f"{self.rating} stars for {self.service} by {self.user}"
 
     class Meta:
+        # ensures only one review per user
         unique_together = ('service', 'user')
