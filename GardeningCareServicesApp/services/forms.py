@@ -8,3 +8,8 @@ class ServiceAddForm(forms.ModelForm):
         model = Service
         fields = ['name', 'description', 'category', 'price', 'photo']
 
+
+class ServiceEditForm(forms.ModelForm):
+    class Meta:
+        model = Service
+        fields = ['name', 'description', 'category', 'price', 'photo']
