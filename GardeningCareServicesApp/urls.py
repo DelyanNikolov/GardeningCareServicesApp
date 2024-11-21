@@ -24,4 +24,5 @@ urlpatterns = [
     path('accounts/', include('GardeningCareServicesApp.accounts.urls')),
     path('services/', include('GardeningCareServicesApp.services.urls')),
     path('providers/', include('GardeningCareServicesApp.providers.urls')),
+    path('homeowners/', include('GardeningCareServicesApp.homeowners.urls')),
 ]

@@ -1,0 +1,24 @@
+{% extends 'common/base.html' %}
+
+{% block title %}{{ profile.user.email }} - Profile{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto mt-8 bg-white p-6 rounded-lg shadow-md">
+    <h1 class="text-2xl font-bold text-green-800">Homeowner Profile</h1>
+    <div class="mt-6">
+        <p><strong>Email:</strong> {{ profile.user.email }}</p>
+        <p><strong>First Name:</strong> {{ profile.first_name|default:"Not provided" }}</p>
+        <p><strong>Last Name:</strong> {{ profile.last_name|default:"Not provided" }}</p>
+        <p><strong>Address:</strong> {{ profile.address|default:"Not provided" }}</p>
+        <p><strong>Phone Number:</strong> {{ profile.phone_number|default:"Not provided" }}</p>
+    </div>
+    <div class="mt-6 flex items-center space-x-4">
+        <a href="{% url 'homeowner-profile-edit' profile.pk %}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-500">
+            Edit Profile
+        </a>
+        <a href="{% url 'homeowner-profile-delete' profile.pk %}" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-500">
+            Delete Profile
+        </a>
+    </div>
+</div>
+{% endblock %}

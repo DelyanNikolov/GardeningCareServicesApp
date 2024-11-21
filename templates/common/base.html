@@ -1,4 +1,5 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,25 +24,29 @@
             </div>
 
             <!-- Authentication Links -->
-            
-            {% if request.user.is_authenticated and request.user.user_type == 'Service Provider' %}
-                
-                <li>
-                    <a href="{% url 'services-create' %}" class="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-600">Create Service</a>
-                </li>
-            {% endif %}
-        
-            <div>
+            <div class="flex items-center space-x-4">
                 {% if user.is_authenticated %}
-                    <span class="px-4 py-2">Hello, {{ user.email|default:"Anonymous" }}</span>
-                     <form method="post" action="{% url 'logout' %}" class="inline">
+                    <!-- Profile Link -->
+                    {% if user.user_type == 'Homeowner' %}
+                        <a href="{% url 'homeowner-profile' user.homeownerprofile.pk %}" class="px-4 py-2 hover:bg-green-600 rounded">My Profile</a>
+                    {% elif user.user_type == 'Service Provider' %}
+                        <a href="{% url 'provider-profile' user.serviceproviderprofile.pk %}" class="px-4 py-2 hover:bg-green-600 rounded">My Profile</a>
+                    {% endif %}
+                    
+                    <!-- Service Creation (Visible for Service Providers) -->
+                    {% if user.user_type == 'Service Provider' %}
+                        <a href="{% url 'services-create' %}" class="bg-white text-green-700 px-4 py-2 rounded hover:bg-green-100">Create Service</a>
+                    {% endif %}
+
+                    <!-- Logout -->
+                    <form method="post" action="{% url 'logout' %}" class="inline">
                         {% csrf_token %}
-                        <button type="submit" class="bg-white text-green-700 px-4 py-2 rounded hover:bg-green-100">
-                            Logout
-                        </button>
+                        <button type="submit" class="bg-white text-green-700 px-4 py-2 rounded hover:bg-green-100">Logout</button>
                     </form>
                 {% else %}
+                    <!-- Login/Signup Links -->
                     <a href="{% url 'login' %}" class="bg-white text-green-700 px-4 py-2 rounded hover:bg-green-100">Login</a>
+                    <a href="{% url 'register' %}" class="bg-white text-green-700 px-4 py-2 rounded hover:bg-green-100">Sign Up</a>
                 {% endif %}
             </div>
         </nav>

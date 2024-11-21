@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     "GardeningCareServicesApp.accounts.apps.AccountsConfig",
     "GardeningCareServicesApp.services.apps.ServicesConfig",
     "GardeningCareServicesApp.common.apps.CommonConfig",
-    "GardeningCareServicesApp.providers.apps.ProvidersConfig"
+    "GardeningCareServicesApp.providers.apps.ProvidersConfig",
+    "GardeningCareServicesApp.homeowners.apps.HomeownersConfig"
 ]
 
 MIDDLEWARE = [
