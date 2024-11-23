@@ -22,7 +22,21 @@
                 <a href="{% url 'services-list' %}" class="px-4 py-2 hover:bg-green-600 rounded">Services</a>
                 <a href="{% url 'providers-list' %}" class="px-4 py-2 hover:bg-green-600 rounded">Providers</a>
             </div>
-
+            <div>
+                <form method="get" action="{% url 'services-list' %}" class="flex items-center mb-4">
+                    <input 
+                        type="text" 
+                        name="q" 
+                        placeholder="Search services..." 
+                        value="{{ query }}" 
+                        class="w-full p-2 border border-gray-300 rounded-l-md focus:ring-green-500 focus:border-green-500 text-gray-800">
+                    <button 
+                        type="submit" 
+                        class="bg-green-700 text-white px-4 py-2 rounded-r-md hover:bg-green-600">
+                        Search
+                    </button>
+                </form>
+            </div>
             <!-- Authentication Links -->
             <div class="flex items-center space-x-4">
                 {% if user.is_authenticated %}
@@ -32,7 +46,7 @@
                     {% elif user.user_type == 'Service Provider' %}
                         <a href="{% url 'provider-profile' user.serviceproviderprofile.pk %}" class="px-4 py-2 hover:bg-green-600 rounded">My Profile</a>
                     {% endif %}
-                    
+
                     <!-- Service Creation (Visible for Service Providers) -->
                     {% if user.user_type == 'Service Provider' %}
                         <a href="{% url 'services-create' %}" class="bg-white text-green-700 px-4 py-2 rounded hover:bg-green-100">Create Service</a>

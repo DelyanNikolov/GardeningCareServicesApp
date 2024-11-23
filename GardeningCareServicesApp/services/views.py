@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
+from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
@@ -18,6 +19,23 @@ class ServicesListPage(ListView):
     template_name = 'services/service_list.html'
     context_object_name = 'services'
     paginate_by = 10
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        queryset = super().get_queryset()
+        if query:
+            queryset = queryset.filter(
+                Q(name__icontains=query) |
+                Q(category__name__icontains=query) |
+                Q(description__icontains=query) |
+                Q(provider__business_name__icontains=query)
+            )
+        return queryset
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')
+        return context
 
 
 class ServiceAddPage(CreateView):
