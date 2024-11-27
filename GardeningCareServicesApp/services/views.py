@@ -1,15 +1,15 @@
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
-from django.views.generic.edit import FormMixin
 
 from GardeningCareServicesApp.accounts.models import ServiceProviderProfile, HomeOwnerProfile
 from GardeningCareServicesApp.common.forms import ReviewForm
-from GardeningCareServicesApp.services.forms import ServiceAddForm, ServiceEditForm
-from GardeningCareServicesApp.services.models import Service
+from GardeningCareServicesApp.services.forms import ServiceAddForm, ServiceEditForm, ServiceCategoryForm
+from GardeningCareServicesApp.services.models import Service, Review
 
 
 # Create your views here.
@@ -115,3 +115,41 @@ class ServiceDeletePage(LoginRequiredMixin, DeleteView):
         if service.provider.user != self.request.user:
             raise PermissionDenied("You are not authorized to delete this service.")
         return service
+
+
+def is_moderator(user):
+    return user.groups.filter(name='Moderator').exists() or user.is_staff
+
+
+@login_required
+@user_passes_test(is_moderator)
+def moderation_dashboard(request):
+    pending_reviews = Review.objects.filter(is_approved=False)
+    category_form = ServiceCategoryForm()
+
+    if request.method == "POST":
+        category_form = ServiceCategoryForm(request.POST)
+        if category_form.is_valid():
+            category_form.save()
+            return redirect('moderation-dashboard')
+
+    return render(
+        request,
+        'services/moderation_dashboard.html',
+        {'pending_reviews': pending_reviews, 'category_form': category_form}
+    )
+
+
+@user_passes_test(is_moderator)
+def approve_review(request, pk):
+    review = get_object_or_404(Review, pk=pk)
+    review.is_approved = True  # Assuming the `Review` model has an `is_approved` field
+    review.save()
+    return redirect('moderation-dashboard')
+
+
+@user_passes_test(is_moderator)
+def delete_review(request, pk):
+    review = get_object_or_404(Review, pk=pk)
+    review.delete()
+    return redirect('moderation-dashboard')

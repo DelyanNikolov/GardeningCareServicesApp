@@ -81,6 +81,7 @@ class Review(models.Model):
         related_name='service_reviews',
     )
 
+    # only homeowners can post comments
     user = models.ForeignKey(
         to=HomeOwnerProfile,
         on_delete=models.CASCADE,
@@ -98,6 +99,8 @@ class Review(models.Model):
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
+
+    is_approved = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.rating} stars for {self.service} by {self.user}"

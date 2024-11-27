@@ -1,15 +1,23 @@
 from django import forms
 
-from GardeningCareServicesApp.services.models import Service
+from GardeningCareServicesApp.services.models import Service, ServiceCategory
 
 
-class ServiceAddForm(forms.ModelForm):
+class BaseServiceForm(forms.ModelForm):
     class Meta:
         model = Service
         fields = ['name', 'description', 'category', 'price', 'photo']
 
 
-class ServiceEditForm(forms.ModelForm):
+class ServiceAddForm(BaseServiceForm):
+    pass
+
+
+class ServiceEditForm(BaseServiceForm):
+    pass
+
+
+class ServiceCategoryForm(forms.ModelForm):
     class Meta:
-        model = Service
-        fields = ['name', 'description', 'category', 'price', 'photo']
+        model = ServiceCategory
+        fields = ['name', 'description',]

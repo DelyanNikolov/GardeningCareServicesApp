@@ -15,15 +15,15 @@
             {% if service.photo %}
             <div class="aspect-w-4 aspect-h-3">
                 <img 
-                    src="{{ service.photo }}" 
-                    alt="{{ services.name }}" 
+                    src="{{ service.photo.url }}"
+                    alt="{{ service.name }}" 
                     class="w-full h-full object-cover">
             </div>
             {% else %}
             <div class="aspect-w-4 aspect-h-3">
                 <img 
                     src="{% static 'media/gardening_default_pic.jpg' %}" 
-                    alt="{{ services.name }}" 
+                    alt="{{ service.name }}" 
                     class="w-full h-full object-cover">
             </div>
             {% endif %}

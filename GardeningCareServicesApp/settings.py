@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     "GardeningCareServicesApp.services.apps.ServicesConfig",
     "GardeningCareServicesApp.common.apps.CommonConfig",
     "GardeningCareServicesApp.providers.apps.ProvidersConfig",
-    "GardeningCareServicesApp.homeowners.apps.HomeownersConfig"
+    "GardeningCareServicesApp.homeowners.apps.HomeownersConfig",
 ]
 
 MIDDLEWARE = [
@@ -134,6 +134,10 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
+
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media_files/'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
