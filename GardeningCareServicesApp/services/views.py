@@ -18,7 +18,7 @@ class ServicesListPage(ListView):
     model = Service
     template_name = 'services/service_list.html'
     context_object_name = 'services'
-    paginate_by = 10
+    paginate_by = 6
 
     def get_queryset(self):
         query = self.request.GET.get('q')
@@ -38,7 +38,7 @@ class ServicesListPage(ListView):
         return context
 
 
-class ServiceAddPage(CreateView):
+class ServiceAddPage(LoginRequiredMixin, CreateView):
     model = Service
     template_name = 'services/service_create.html'
     form_class = ServiceAddForm
