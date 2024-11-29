@@ -10,32 +10,31 @@
             {% csrf_token %}
             {{ form.non_field_errors }}
             <div class="grid grid-cols-1 gap-6">
-                <!-- Render each field with its errors -->
+                <!-- Render each field with custom styles -->
                 {% for field in form %}
                 <div>
                     <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">
                         {{ field.label }}
                     </label>
-                    {{ field }}
+                    <input 
+                        id="{{ field.id_for_label }}"
+                        name="{{ field.name }}"
+                        type="{{ field.field.widget.input_type }}"
+                        value="{{ field.value|default_if_none:'' }}"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                        {% for attr, value in field.field.widget.attrs.items %}
+                            {{ attr }}="{{ value }}"
+                        {% endfor %}
+                    />
                     {% for error in field.errors %}
                     <p class="text-sm text-red-600">{{ error }}</p>
                     {% endfor %}
                 </div>
                 {% endfor %}
             </div>
-
-            <!-- Submit Button -->
-            <div class="mt-6 flex justify-between items-center">
-                <button type="submit" class="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-600">
-                    Save Changes
-                </button>
-
-                <!-- Delete Profile Button -->
-                <a href="{% url 'profile-delete' profile.pk %}" 
-                   class="text-red-600 font-semibold hover:underline hover:text-red-700">
-                    Delete Profile
-                </a>
-            </div>
+            <button type="submit" class="mt-6 bg-green-700 text-white px-4 py-2 rounded shadow hover:bg-green-600">
+                Save Changes
+            </button>
         </form>
     </div>
 </div>
