@@ -11,6 +11,9 @@ from GardeningCareServicesApp.common.forms import ReviewForm
 from GardeningCareServicesApp.services.forms import ServiceAddForm, ServiceEditForm, ServiceCategoryForm
 from GardeningCareServicesApp.services.models import Service, Review
 
+from django.db import IntegrityError, models
+from django.contrib import messages
+
 
 # Create your views here.
 
@@ -34,6 +37,19 @@ class ServicesListPage(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        # Add filled and empty star data for each service
+        services = context['services']
+        for service in services:
+            reviews = service.service_reviews.all()
+            if reviews.exists():
+                average_rating = reviews.aggregate(models.Avg('rating'))['rating__avg'] or 0
+            else:
+                average_rating = 0
+
+            service.filled_stars = range(int(average_rating))
+            service.empty_stars = range(5 - int(average_rating))
+
         context['query'] = self.request.GET.get('q', '')
         return context
 
@@ -75,13 +91,31 @@ class ServiceDetailsPage(DetailView):
         self.object = self.get_object()
         form = ReviewForm(request.POST)
 
+        if not request.user.is_authenticated:
+            raise PermissionDenied("You must be logged in to leave a review.")
+
+            # Check if the user is a homeowner
+        try:
+            homeowner_profile = HomeOwnerProfile.objects.get(user=request.user)
+        except HomeOwnerProfile.DoesNotExist:
+            messages.error(request, "Only homeowners can leave reviews.")
+            return redirect(reverse('service-details', args=[self.object.id]))
+
         if form.is_valid():
             review = form.save(commit=False)
             review.service = self.object
             review.user = HomeOwnerProfile.objects.get(user=self.request.user)
-            review.save()
+
+            try:
+                review.save()
+                messages.success(request, "Your review has been submitted.")
+            except IntegrityError:
+                # Handle the case where the user already submitted a review
+                messages.error(request, "You have already reviewed this service.")
+
             return redirect(reverse('service-details', args=[self.object.id]))
 
+        # If form is invalid, re-render the page with form errors
         context = self.get_context_data()
         context['review_form'] = form
         return self.render_to_response(context)
