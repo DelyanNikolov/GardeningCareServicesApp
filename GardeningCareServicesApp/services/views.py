@@ -122,6 +122,7 @@ class ServiceDetailsPage(DetailView):
 
 
 class ServiceEditPage(LoginRequiredMixin, UpdateView):
+    permission = 'services.change_service'
     model = Service
     form_class = ServiceEditForm
     template_name = 'services/service_edit.html'
@@ -129,7 +130,8 @@ class ServiceEditPage(LoginRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         service = get_object_or_404(Service, pk=self.kwargs['pk'])
 
-        if service.provider.user != self.request.user:
+        # Only owner of the service or user with permission are authorised to edit
+        if service.provider.user != self.request.user and not self.request.user.has_perm(self.permission):
             raise PermissionDenied("You are not authorized to edit this service.")
         return service
 
@@ -139,6 +141,7 @@ class ServiceEditPage(LoginRequiredMixin, UpdateView):
 
 
 class ServiceDeletePage(LoginRequiredMixin, DeleteView):
+    permission = 'services.delete_service'
     model = Service
     template_name = 'services/service_delete.html'
     success_url = reverse_lazy('services-list')
@@ -146,18 +149,17 @@ class ServiceDeletePage(LoginRequiredMixin, DeleteView):
     def get_object(self, queryset=None):
         service = super().get_object(queryset)
 
-        if service.provider.user != self.request.user:
+        # Only owner of the service or user with permission are authorised to edit
+        if service.provider.user != self.request.user and not self.request.user.has_perm(self.permission):
             raise PermissionDenied("You are not authorized to delete this service.")
         return service
 
 
-def is_moderator(user):
-    return user.groups.filter(name='Moderator').exists() or user.is_staff
-
-
 @login_required
-@user_passes_test(is_moderator)
 def moderation_dashboard(request):
+    if not request.user.has_perm('services.view_review'):
+        raise PermissionDenied("You are not authorized to access this page.")
+
     pending_reviews = Review.objects.filter(is_approved=False)
     category_form = ServiceCategoryForm()
 
@@ -174,16 +176,23 @@ def moderation_dashboard(request):
     )
 
 
-@user_passes_test(is_moderator)
+
+@login_required
 def approve_review(request, pk):
+    if not request.user.has_perm('services.change_review'):
+        raise PermissionDenied("You are not authorized to access this page.")
+
     review = get_object_or_404(Review, pk=pk)
-    review.is_approved = True  # Assuming the `Review` model has an `is_approved` field
+    review.is_approved = True
     review.save()
     return redirect('moderation-dashboard')
 
 
-@user_passes_test(is_moderator)
+@login_required()
 def delete_review(request, pk):
+    if not request.user.has_perm('services.delete_review'):
+        raise PermissionDenied("You are not authorized to access this page.")
+
     review = get_object_or_404(Review, pk=pk)
     review.delete()
     return redirect('moderation-dashboard')

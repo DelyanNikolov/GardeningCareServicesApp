@@ -1,12 +1,14 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView
 
 from GardeningCareServicesApp.accounts.models import ServiceProviderProfile
-# Create your views here.
-
 from GardeningCareServicesApp.providers.fomrs import ServiceProviderProfileForm
+
+
+# Create your views here.
 
 
 class ProvidersListPage(ListView):
@@ -53,8 +55,10 @@ class ProviderProfilePage(DetailView):
         # Add services provided by the provider
         services = profile.provider_services.all()
 
-        # Determine if the current user is the owner of the profile
-        is_owner = self.request.user == profile.user
+        # Determine if the current user is the owner of the profile, or it has permission to change the profile
+        is_owner = self.request.user == profile.user or self.request.user.has_perm(
+            'accounts.change_serviceproviderprofile'
+        )
 
         context.update({
             'filled_stars': range(filled_stars),
@@ -65,32 +69,36 @@ class ProviderProfilePage(DetailView):
         return context
 
 
-class ProviderEditPage(LoginRequiredMixin, UpdateView):
+class ProviderEditPage(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    model = ServiceProviderProfile
     template_name = 'providers/provider_edit.html'
+    form_class = ServiceProviderProfileForm
+    permission_required = 'accounts.change_serviceproviderprofile'
 
-    def get(self, request, *args, **kwargs):
-        # Ensure the logged-in user can only edit their own profile
-        profile = get_object_or_404(ServiceProviderProfile, user=request.user)
-        form = ServiceProviderProfileForm(instance=profile)
-        return self.render_to_response({'form': form, 'profile': profile})
+    def get_object(self, queryset=None):
+        # Allow access if the user is the profile owner or has the required permission
+        profile = get_object_or_404(ServiceProviderProfile, pk=self.kwargs['pk'])
+        if self.request.user != profile.user and not self.request.user.has_perm(self.permission_required):
+            raise PermissionDenied("You are not authorized to edit this profile.")
+        return profile
 
-    def post(self, request, *args, **kwargs):
-        profile = get_object_or_404(ServiceProviderProfile, user=request.user)
-        form = ServiceProviderProfileForm(request.POST, instance=profile)
-        if form.is_valid():
-            form.save()
-            return redirect(reverse('provider-profile', kwargs={'pk': profile.pk}))
-        return self.render_to_response({'form': form, 'profile': profile})
+    def form_valid(self, form):
+        # Save the profile and redirect to the profile page
+        self.object = form.save()
+        return redirect(reverse('provider-profile', kwargs={'pk': self.object.pk}))
 
 
-class ProfileDeletePage(LoginRequiredMixin, DeleteView):
+class ProfileDeletePage(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = ServiceProviderProfile
     template_name = 'providers/profile_delete_confirm.html'
     success_url = reverse_lazy('home')  # Redirect to the home page after deletion
+    permission_required = 'accounts.delete_serviceproviderprofile'
 
     def get_object(self, queryset=None):
-        # Ensure the logged-in user can only delete their own profile
-        return get_object_or_404(ServiceProviderProfile, user=self.request.user)
+        profile = get_object_or_404(ServiceProviderProfile, pk=self.kwargs['pk'])
+        if self.request.user != profile.user and not self.request.user.has_perm(self.permission_required):
+            raise PermissionDenied("You are not authorized to delete this profile.")
+        return profile
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
