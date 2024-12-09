@@ -12,6 +12,8 @@
                 <h1 class="text-2xl font-bold text-green-800">{{ profile.business_name }}</h1>
                 <p class="text-gray-700 mt-2">{{ profile.service_description }}</p>
                 <p class="text-gray-500 mt-2">Location: <span class="font-semibold text-gray-700">{{ profile.location }}</span></p>
+                <p class="text-gray-500 mt-2">Phone number: <span class="font-semibold text-gray-700">{{ profile.phone_number|default:'N/A' }}</span></p>
+                <p class="text-gray-500 mt-2">Email: <span class="font-semibold text-gray-700">{{ profile.user.email }}</span></p>
                 <p class="text-gray-500">Years of Experience: <span class="font-semibold text-gray-700">{{ profile.years_of_experience }}</span></p>
                 <div class="flex items-center mt-4">
                     <!-- Star Ratings -->

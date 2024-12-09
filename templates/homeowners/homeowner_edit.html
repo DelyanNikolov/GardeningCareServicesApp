@@ -27,6 +27,15 @@
             <input id="id_phone_number" name="phone_number" type="text" value="{{ form.phone_number.value }}" 
                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm">
         </div>
+        <div>
+             {% if form.phone_number.errors %}
+                <ul class="text-red-500 text-sm mt-2">
+                    {% for error in form.phone_number.errors %}
+                        <li class="mb-1">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
         <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-500">Save Changes</button>
         <a href="{% url 'homeowner-profile' object.pk %}" class="ml-4 text-gray-600 hover:text-gray-800">Cancel</a>
     </form>

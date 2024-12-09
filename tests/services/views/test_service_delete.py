@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
 from django.test import TestCase
 from django.urls import reverse
 
@@ -60,6 +61,22 @@ class TestServiceDelete(TestCase):
 
         self.assertTrue(Service.objects.filter(pk=self.service.pk).exists())
         self.assertEqual(response.status_code, 403)
+
+    def test_service_delete_when_user_is_not_owner_but_has_permission_expect_photo_deleted(self):
+
+        self.other_user.user_permissions.add(Permission.objects.get(codename='delete_service'))
+
+        self.client.login(
+            email='test2@test.com',
+            password='password'
+        )
+
+        response = self.client.post(
+            reverse('service-delete', kwargs={'pk': self.service.pk}),
+        )
+
+        self.assertFalse(Service.objects.filter(pk=self.service.pk).exists())
+        self.assertRedirects(response, reverse('services-list'))
 
     def test_service_delete_with_anonymous_user_expect_redirect_to_login(self):
         self.client.logout()

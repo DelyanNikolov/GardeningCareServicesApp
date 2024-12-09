@@ -82,10 +82,8 @@ class ProviderEditPage(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
             raise PermissionDenied("You are not authorized to edit this profile.")
         return profile
 
-    def form_valid(self, form):
-        # Save the profile and redirect to the profile page
-        self.object = form.save()
-        return redirect(reverse('provider-profile', kwargs={'pk': self.object.pk}))
+    def get_success_url(self):
+        return reverse_lazy('provider-profile', kwargs={'pk': self.object.pk})
 
 
 class ProfileDeletePage(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):

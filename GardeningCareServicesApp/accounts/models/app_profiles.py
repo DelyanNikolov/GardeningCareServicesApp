@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
+from GardeningCareServicesApp.accounts.validators import PhoneNumberValidator
+
 UserModel = get_user_model()
 
 
@@ -36,6 +38,16 @@ class ServiceProviderProfile(models.Model):
         max_length=255,
         blank=True,
         null=True
+    )
+
+    phone_number = models.CharField(
+        max_length=15,
+        validators=[
+            PhoneNumberValidator()
+        ],
+        blank=True,
+        null=True,
+        help_text='Only digits spaces and - allowed'
     )
 
     years_of_experience = models.PositiveIntegerField(
@@ -83,8 +95,12 @@ class HomeOwnerProfile(models.Model):
 
     phone_number = models.CharField(
         max_length=15,
+        validators=[
+            PhoneNumberValidator()
+        ],
         blank=True,
-        null=True
+        null=True,
+        help_text='Only digits spaces and - allowed'
     )
 
     def get_full_name(self):
