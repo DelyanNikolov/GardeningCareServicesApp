@@ -1,0 +1,71 @@
+{% extends 'common/base.html' %}
+{% load static %}
+
+{% block title %}Service List{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6">
+    <h1 class="text-3xl font-bold text-green-800 mb-6">Available Services</h1>
+
+    <!-- Service Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for service in services %}
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+            <!-- Service Photo -->
+            {% if service.photo %}
+            <div class="aspect-w-4 aspect-h-3">
+                <img 
+                    src="{{ service.photo.url }}"
+                    alt="{{ service.name }}" 
+                    class="w-full h-full object-cover">
+            </div>
+            {% else %}
+            <div class="aspect-w-4 aspect-h-3">
+                <img 
+                    src="{% static 'media/gardening_default_pic.jpg' %}" 
+                    alt="{{ service.name }}" 
+                    class="w-full h-full object-cover">
+            </div>
+            {% endif %}
+            <!-- Service Details -->
+            <div class="p-4">
+                <h2 class="text-xl font-semibold text-green-700 truncate">{{ service.name }}</h2>
+                <p class="text-gray-600 text-sm mt-2 truncate">{{ service.description|default:"" }}</p>
+                <p class="text-gray-900 font-bold mt-4">${{ service.price }}</p>
+                <p class="text-sm text-gray-500">Category: {{ service.category.name }}</p>
+                <p class="text-sm text-gray-500">Provider: {{ service.provider.business_name| default:"" }}</p>
+            </div>
+            <!-- Action Buttons -->
+            <div class="p-4 border-t flex justify-between items-center bg-gray-50">
+                <a 
+                    href="{% url 'service-details' service.pk %}" 
+                    class="text-green-700 hover:underline font-medium">
+                    View Details
+                </a>
+            <!-- Star Ratings -->
+            <div class="mt-3">
+                <div class="flex text-yellow-400">
+                    <!-- Display filled stars -->
+                    {% for _ in service.filled_stars %}
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 .587l3.668 7.568 8.332 1.151-6.065 5.781 1.684 8.095L12 18.896l-7.619 4.286 1.684-8.095L0 9.306l8.332-1.151z" />
+                    </svg>
+                    {% endfor %}
+                    <!-- Display empty stars -->
+                    {% for _ in service.empty_stars %}
+                    <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 .587l3.668 7.568 8.332 1.151-6.065 5.781 1.684 8.095L12 18.896l-7.619 4.286 1.684-8.095L0 9.306l8.332-1.151z" />
+                    </svg>
+                    {% endfor %}
+                </div>
+                <p class="text-sm text-gray-600 mt-1">Based on {{ service.service_reviews.count }} review(s)</p>
+            </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-gray-500">No services available at the moment.</p>
+        {% endfor %}
+    </div>
+</div>
+    {% include 'common/pagination.html' %}
+{% endblock %}

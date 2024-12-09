@@ -1,0 +1,80 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gardening Care Services{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-green-50 text-gray-800">
+    <!-- Header / Navigation -->
+    <header class="bg-green-700 text-white">
+        <nav class="container mx-auto p-4 flex justify-between items-center">
+            <!-- Brand Name -->
+            <a href="{% url 'home' %}" class="text-2xl font-bold">Gardening Care</a>
+
+            <!-- Navigation Links -->
+            <div class="flex items-center space-x-4">
+                <a href="{% url 'home' %}" class="px-4 py-2 hover:bg-green-600 rounded">Home</a>
+                <a href="{% url 'services-list' %}" class="px-4 py-2 hover:bg-green-600 rounded">Services</a>
+                <a href="{% url 'providers-list' %}" class="px-4 py-2 hover:bg-green-600 rounded">Providers</a>
+            </div>
+            <div>
+             <!-- Search bar -->
+                <form method="get" action="{% url 'services-list' %}" class="flex items-center space-x-4">
+                    <input 
+                        type="text" 
+                        name="q" 
+                        placeholder="Search services..." 
+                        value="{{ query }}" 
+                        class="w-full p-2 border border-gray-300 rounded-l-md focus:ring-green-500 focus:border-green-500 text-gray-800">
+                    <button 
+                        type="submit" 
+                        class="bg-green-700 text-white px-4 py-2 rounded-r-md hover:bg-green-600">
+                        Search
+                    </button>
+                </form>
+            </div>
+            <!-- Authentication Links -->
+            <div class="flex items-center space-x-4">
+                {% if user.is_authenticated %}
+                    <!-- Profile Link -->
+                    {% if user.user_type == 'Homeowner' %}
+                        <a href="{% url 'homeowner-profile' user.homeownerprofile.pk %}" class="px-4 py-2 hover:bg-green-600 rounded">My Profile</a>
+                    {% elif user.user_type == 'Service Provider' %}
+                        <a href="{% url 'provider-profile' user.serviceproviderprofile.pk %}" class="px-4 py-2 hover:bg-green-600 rounded">My Profile</a>
+                    {% endif %}
+
+                    <!-- Service Creation (Visible for Service Providers) -->
+                    {% if user.user_type == 'Service Provider' %}
+                        <a href="{% url 'services-create' %}" class="bg-white text-green-700 px-4 py-2 rounded hover:bg-green-100">Create Service</a>
+                    {% endif %}
+
+                    <!-- Logout -->
+                    <form method="post" action="{% url 'logout' %}" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" class="bg-white text-green-700 px-4 py-2 rounded hover:bg-green-100">Logout</button>
+                    </form>
+                {% else %}
+                    <!-- Login/Signup Links -->
+                    <a href="{% url 'login' %}" class="bg-white text-green-700 px-4 py-2 rounded hover:bg-green-100">Login</a>
+                    <a href="{% url 'register' %}" class="bg-white text-green-700 px-4 py-2 rounded hover:bg-green-100">Sign Up</a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-6">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-green-800 text-green-100 py-4 text-center">
+        <p>&copy; 2024 Gardening Care Services</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,42 @@
+body {
+    font-family: Arial, sans-serif;
+    color: #333;
+}
+
+header, footer {
+    background-color: #f4f4f4;
+    padding: 1em;
+    text-align: center;
+}
+
+nav a {
+    margin: 0 10px;
+    color: #333;
+    text-decoration: none;
+}
+
+.service-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+}
+
+.service-item {
+    border: 1px solid #ddd;
+    padding: 1em;
+    width: 30%;
+}
+
+.service-photo {
+    width: 100%;
+    height: auto;
+}
+
+.reviews {
+    margin-top: 1em;
+}
+
+.review {
+    border-bottom: 1px solid #ddd;
+    padding: 0.5em 0;
+}

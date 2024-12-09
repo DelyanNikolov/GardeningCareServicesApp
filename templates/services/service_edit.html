@@ -1,0 +1,80 @@
+{% extends 'common/base.html' %}
+
+{% block title %}Edit Service{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-8 bg-white p-6 rounded-lg shadow-md">
+    <h1 class="text-2xl font-bold text-green-800 mb-6">Edit Service</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="grid grid-cols-1 gap-6">
+            <!-- Service Name -->
+            <div>
+                <label for="id_name" class="block text-sm font-medium text-gray-700">Service Name</label>
+                <input type="text" id="id_name" name="name" value="{{ form.name.value }}" 
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                {% for error in form.name.errors %}
+                <p class="text-sm text-red-600">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label for="id_description" class="block text-sm font-medium text-gray-700">Description</label>
+                <textarea id="id_description" name="description" rows="4"
+                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm">{{ form.description.value }}</textarea>
+                {% for error in form.description.errors %}
+                <p class="text-sm text-red-600">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <!-- Category -->
+            <div>
+                <label for="id_category" class="block text-sm font-medium text-gray-700">Category</label>
+                <select id="id_category" name="category"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                    {% for category in form.category.field.queryset %}
+                    <option value="{{ category.pk }}" {% if form.category.value == category.pk %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+                {% for error in form.category.errors %}
+                <p class="text-sm text-red-600">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <!-- Price -->
+            <div>
+                <label for="id_price" class="block text-sm font-medium text-gray-700">Price</label>
+                <input type="number" id="id_price" name="price" value="{{ form.price.value }}" step="0.01"
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                {% for error in form.price.errors %}
+                <p class="text-sm text-red-600">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <!-- Photo -->
+            <div>
+                <label for="id_photo" class="block text-sm font-medium text-gray-700">Photo</label>
+                <input type="file" id="id_photo" name="photo"
+                       class="mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                {% if form.photo.value %}
+                <img src="{{ form.photo.value.url }}" alt="{{ form.photo.value.name }}" class="mt-4 w-32 h-32 object-cover">
+                {% endif %}
+                {% for error in form.photo.errors %}
+                <p class="text-sm text-red-600">{{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="mt-6">
+            <button type="submit" class="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-600">
+                Save Changes
+            </button>
+            <a href="{% url 'services-list' %}" class="ml-4 text-gray-500 hover:text-gray-700">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
