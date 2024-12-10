@@ -94,31 +94,34 @@ class ServiceDetailsPage(DetailView):
         if not request.user.is_authenticated:
             raise PermissionDenied("You must be logged in to leave a review.")
 
-            # Check if the user is a homeowner
+        # Check if the user is a homeowner
         try:
             homeowner_profile = HomeOwnerProfile.objects.get(user=request.user)
         except HomeOwnerProfile.DoesNotExist:
             messages.error(request, "Only homeowners can leave reviews.")
             return redirect(reverse('service-details', args=[self.object.id]))
 
+        # Check if the user has already reviewed this service
+        if Review.objects.filter(service=self.object, user=homeowner_profile).exists():
+            messages.error(request, "You have already reviewed this service.")
+            return redirect(reverse('service-details', args=[self.object.id]))
+
         if form.is_valid():
             review = form.save(commit=False)
             review.service = self.object
-            review.user = HomeOwnerProfile.objects.get(user=self.request.user)
-
+            review.user = homeowner_profile
             try:
                 review.save()
                 messages.success(request, "Your review has been submitted.")
+                return redirect(reverse('service-details', args=[self.object.id]))
             except IntegrityError:
-                # Handle the case where the user already submitted a review
                 messages.error(request, "You have already reviewed this service.")
-
-            return redirect(reverse('service-details', args=[self.object.id]))
-
-        # If form is invalid, re-render the page with form errors
-        context = self.get_context_data()
-        context['review_form'] = form
-        return self.render_to_response(context)
+                return redirect(reverse('service-details', args=[self.object.id]))
+        else:
+            # If the form is invalid, re-render the page with form errors
+            context = self.get_context_data()
+            context['review_form'] = form
+            return self.render_to_response(context)  # Ensure this path returns a response
 
 
 class ServiceEditPage(LoginRequiredMixin, UpdateView):
@@ -174,7 +177,6 @@ def moderation_dashboard(request):
         'services/moderation_dashboard.html',
         {'pending_reviews': pending_reviews, 'category_form': category_form}
     )
-
 
 
 @login_required
