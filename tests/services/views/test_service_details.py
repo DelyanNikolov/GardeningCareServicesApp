@@ -53,7 +53,7 @@ class ServiceDetailsPageTest(TestCase):
         self.assertEqual(reviews_with_stars[0]['filled_stars'], range(4))
         self.assertEqual(reviews_with_stars[0]['empty_stars'], range(1))
 
-    def test_post_review_authenticated_homeowner(self):
+    def test_post_review_authenticated_homeowner_expected_new_post_created_success_msg(self):
         self.client.login(email="testuser3@test.com", password="testpass")
         url = reverse('service-details', args=[self.service.id])
 
@@ -71,7 +71,7 @@ class ServiceDetailsPageTest(TestCase):
 
     from django.core.exceptions import PermissionDenied
 
-    def test_post_review_non_authenticated_user(self):
+    def test_post_review_non_authenticated_user_expect_403_Forbidden(self):
         url = reverse('service-details', args=[self.service.id])
 
         # Post a review without logging in
@@ -83,7 +83,7 @@ class ServiceDetailsPageTest(TestCase):
         # Assert that the response status code is 403
         self.assertEqual(response.status_code, 403)
 
-    def test_post_review_non_homeowner(self):
+    def test_post_review_non_homeowner_expected_error_msg(self):
         non_homeowner = User.objects.create_user(email="otheruser@test.com", password="testpass", user_type="Service Provider")
         self.client.login(email="otheruser@test.com", password="testpass")
         url = reverse('service-details', args=[self.service.id])
@@ -97,7 +97,7 @@ class ServiceDetailsPageTest(TestCase):
         messages = list(get_messages(response.wsgi_request))
         self.assertTrue(any("Only homeowners can leave reviews." in str(message) for message in messages))
 
-    def test_post_duplicate_review(self):
+    def test_post_duplicate_review_expected_no_review_created_and_error_msg(self):
         self.client.login(email="testuser@test.com", password="testpass")
         url = reverse('service-details', args=[self.service.id])
 

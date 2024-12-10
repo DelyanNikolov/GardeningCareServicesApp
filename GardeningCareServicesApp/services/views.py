@@ -179,7 +179,6 @@ def moderation_dashboard(request):
     )
 
 
-
 @login_required
 def approve_review(request, pk):
     if not request.user.has_perm('services.change_review'):

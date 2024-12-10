@@ -1,8 +1,9 @@
 from django.urls import path
 
-from GardeningCareServicesApp.common.views import IndexView
+from GardeningCareServicesApp.common.views import PublicIndexView, custom_home_view
 
 urlpatterns = [
-    path('', IndexView.as_view(), name='home'),
+    path('', custom_home_view, name='home'),
+    path('index/', PublicIndexView.as_view(), name='public-home'),
 ]
 
