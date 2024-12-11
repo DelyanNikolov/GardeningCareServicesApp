@@ -28,6 +28,7 @@ class ServicesListPage(ListView):
     paginate_by = 6
 
     def get_queryset(self):
+        # Gets data for the simple search bar
         query = self.request.GET.get('q')
         queryset = super().get_queryset()
         if query:
@@ -164,6 +165,7 @@ class ServiceDeletePage(LoginRequiredMixin, DeleteView):
 
 @login_required
 def moderation_dashboard(request):
+    # Only users with permissions can access
     if not request.user.has_perm('services.view_review'):
         raise PermissionDenied("You are not authorized to access this page.")
 
@@ -179,6 +181,7 @@ def moderation_dashboard(request):
 
 @login_required
 def approve_review(request, pk):
+    # Only users with permissions can access
     if not request.user.has_perm('services.change_review'):
         raise PermissionDenied("You are not authorized to access this page.")
 
@@ -190,6 +193,7 @@ def approve_review(request, pk):
 
 @login_required()
 def delete_review(request, pk):
+    # Only users with permissions can access
     if not request.user.has_perm('services.delete_review'):
         raise PermissionDenied("You are not authorized to access this page.")
 

@@ -16,7 +16,7 @@
                 Approve
             </button>
         </form>
-        
+
         <!-- Delete Button -->
         <form action="{% url 'delete-review' review.pk %}" method="post">
             {% csrf_token %}
@@ -49,9 +49,9 @@
     <form id="category-form" method="post" class="space-y-4">
         {% csrf_token %}
         <div class="flex flex-wrap gap-4 items-center">
-            <input type="text" id="category-name" placeholder="Category Name" required 
+            <input type="text" id="category-name" placeholder="Category Name" required
                 class="p-2 border rounded-md flex-1 min-w-[200px]">
-            <textarea id="category-description" placeholder="Category Description" required 
+            <textarea id="category-description" placeholder="Category Description" required
                 class="p-2 border rounded-md flex-1 min-w-[200px] resize-none"></textarea>
             <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
                 Submit
@@ -172,7 +172,7 @@
 
         if (response.ok) {
             alert('Category deleted successfully');
-            loadCategories(); // Reload categories
+            await loadCategories(); // Reload categories
         } else {
             showError('Error deleting category.');
         }

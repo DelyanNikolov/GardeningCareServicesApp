@@ -3,6 +3,8 @@ from django.urls import reverse
 from django.views.generic import TemplateView
 
 
+# Create your views here.
+
 def custom_home_view(request):
     # Check if the user is an administrator or staff
     if request.user.groups.filter(name="Administrator").exists() or request.user.is_staff:
@@ -12,6 +14,6 @@ def custom_home_view(request):
     return redirect(reverse('public-home'))
 
 
-# Create your views here.
 class PublicIndexView(TemplateView):
+    # Public page for unauthenticated and users with no special permissions
     template_name = 'common/home.html'

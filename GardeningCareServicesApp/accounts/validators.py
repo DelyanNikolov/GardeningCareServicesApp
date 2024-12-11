@@ -4,6 +4,7 @@ from django.utils.deconstruct import deconstructible
 
 @deconstructible
 class PhoneNumberValidator:
+    """Validates phone numbers. To contain only digits spaces and dashes"""
     def __init__(self, message=None):
         self.message = message
 
