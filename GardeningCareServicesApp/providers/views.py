@@ -89,10 +89,11 @@ class ProviderEditPage(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
 class ProfileDeletePage(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = ServiceProviderProfile
     template_name = 'providers/profile_delete_confirm.html'
-    success_url = reverse_lazy('home')  # Redirect to the home page after deletion
+    success_url = reverse_lazy('home')
     permission_required = 'accounts.delete_serviceproviderprofile'
 
     def get_object(self, queryset=None):
+        # Allow access if the user is the profile owner or has the required permission
         profile = get_object_or_404(ServiceProviderProfile, pk=self.kwargs['pk'])
         if self.request.user != profile.user and not self.request.user.has_perm(self.permission_required):
             raise PermissionDenied("You are not authorized to delete this profile.")
@@ -100,5 +101,5 @@ class ProfileDeletePage(LoginRequiredMixin, PermissionRequiredMixin, DeleteView)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['profile'] = self.object  # Pass the profile object
+        context['profile'] = self.object
         return context

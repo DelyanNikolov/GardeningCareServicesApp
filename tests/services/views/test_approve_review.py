@@ -13,31 +13,38 @@ UserModel = get_user_model()
 
 class TestApproveReview(TestCase):
     def setUp(self):
+        # Create category
         self.category = ServiceCategory.objects.create(name='Test Category', description='Some description')
 
+        # Create homeowner and associated profile
         self.homeowner = UserModel.objects.create_user(
             email='homeowner@test.com',
             password='password',
         )
+        self.homeowner_profile, created = HomeOwnerProfile.objects.get_or_create(user=self.homeowner)
 
+        # Create service provider and associated profile
         self.provider = UserModel.objects.create_user(
             email='provider@test.com',
             password='password',
             user_type='Service Provider'
         )
+        self.provider_profile, created = ServiceProviderProfile.objects.get_or_create(user=self.provider)
 
+        # Create service
         self.service = Service.objects.create(
             photo="photo.png",
             name="Test Service",
             description="Test Service Description",
             price=10,
-            provider=ServiceProviderProfile.objects.filter(pk=self.provider.pk).first(),
+            provider=self.provider_profile,
             category=self.category,
         )
 
+        # Create review
         self.review = Review.objects.create(
             service=self.service,
-            user=HomeOwnerProfile.objects.filter(pk=self.homeowner.pk).first(),
+            user=self.homeowner_profile,
             rating=4,
             comment="Great service!"
         )
@@ -61,31 +68,31 @@ class TestApproveReview(TestCase):
 
         self.assertRaises(PermissionDenied)
 
-    def test_approve_review_with_permission(self):
-        # Grant the 'change_review' permission to the user
-        self.homeowner.user_permissions.add(Permission.objects.get(codename='change_review'))
+    from django.contrib.auth.models import Permission
 
-        # Ensure user has permission
+    def test_approve_review_with_permission(self):
+        # Grant the 'change_review' permission
+        permission1 = Permission.objects.get(codename='change_review')
+        permission2 = Permission.objects.get(codename='view_review')
+        self.homeowner.user_permissions.add(permission1)
+        self.homeowner.user_permissions.add(permission2)
+
+        # Verify the user has the permission
         self.assertTrue(self.homeowner.has_perm('services.change_review'))
+        self.assertTrue(self.homeowner.has_perm('services.view_review'))
 
         # Log in as the user
-        self.client.login(email='homeowner@test.com', password='testpass')
+        self.client.login(email='homeowner@test.com', password='password')
 
-        # Access the view
+        # Access the approve-review view
         url = reverse('approve-review', args=[self.review.pk])
         response = self.client.post(url)
 
-        # Check response status code
-        self.assertEqual(response.status_code, 302)
-
         # Reload the review from the database
-        print(f"Before: {self.review.is_approved}")
         self.review.refresh_from_db()
-        print(f"After: {self.review.is_approved}")
 
-        # Verify the review is approved
+        # Check if the review is approved
         self.assertTrue(self.review.is_approved)
 
         # Verify redirection to the moderation dashboard
         self.assertRedirects(response, reverse('moderation-dashboard'))
-

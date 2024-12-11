@@ -5,14 +5,18 @@ from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 
 from GardeningCareServicesApp.accounts.models import ServiceProviderProfile, HomeOwnerProfile
 from GardeningCareServicesApp.common.forms import ReviewForm
-from GardeningCareServicesApp.services.forms import ServiceAddForm, ServiceEditForm, ServiceCategoryForm
-from GardeningCareServicesApp.services.models import Service, Review
+from GardeningCareServicesApp.services.forms import ServiceAddForm, ServiceEditForm
+from GardeningCareServicesApp.services.models import Service, Review, ServiceCategory
 
 from django.db import IntegrityError, models
 from django.contrib import messages
+
+from GardeningCareServicesApp.services.serializers import ServiceCategorySerializer
 
 
 # Create your views here.
@@ -24,6 +28,7 @@ class ServicesListPage(ListView):
     paginate_by = 6
 
     def get_queryset(self):
+        # Gets data for the simple search bar
         query = self.request.GET.get('q')
         queryset = super().get_queryset()
         if query:
@@ -160,27 +165,23 @@ class ServiceDeletePage(LoginRequiredMixin, DeleteView):
 
 @login_required
 def moderation_dashboard(request):
+    # Only users with permissions can access
     if not request.user.has_perm('services.view_review'):
         raise PermissionDenied("You are not authorized to access this page.")
 
     pending_reviews = Review.objects.filter(is_approved=False)
-    category_form = ServiceCategoryForm()
-
-    if request.method == "POST":
-        category_form = ServiceCategoryForm(request.POST)
-        if category_form.is_valid():
-            category_form.save()
-            return redirect('moderation-dashboard')
+    categories = ServiceCategory.objects.all()
 
     return render(
         request,
         'services/moderation_dashboard.html',
-        {'pending_reviews': pending_reviews, 'category_form': category_form}
+        {'pending_reviews': pending_reviews, 'categories': categories}
     )
 
 
 @login_required
 def approve_review(request, pk):
+    # Only users with permissions can access
     if not request.user.has_perm('services.change_review'):
         raise PermissionDenied("You are not authorized to access this page.")
 
@@ -192,9 +193,32 @@ def approve_review(request, pk):
 
 @login_required()
 def delete_review(request, pk):
+    # Only users with permissions can access
     if not request.user.has_perm('services.delete_review'):
         raise PermissionDenied("You are not authorized to access this page.")
 
     review = get_object_or_404(Review, pk=pk)
     review.delete()
     return redirect('moderation-dashboard')
+
+
+class ServiceCategoryViewSet(viewsets.ModelViewSet):
+    queryset = ServiceCategory.objects.all()
+    serializer_class = ServiceCategorySerializer
+    permission_classes = [IsAuthenticated, DjangoModelPermissions]  # Only authenticated and users with permissions
+
+    def get_queryset(self):
+        """Only fetch categories that are available to the user"""
+        return self.queryset.all()
+
+    def perform_create(self, serializer):
+        """Custom logic for creating a category"""
+        serializer.save()
+
+    def perform_update(self, serializer):
+        """Custom logic for updating a category"""
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        """Custom logic for deleting a category"""
+        instance.delete()
