@@ -19,7 +19,7 @@ https://gardeningcareservices-eag6etcgafccgmd7.italynorth-01.azurewebsites.net
 
 ### Step 1: Clone the project
 ```bash
-git clone https://github.com/VenomRevenge/Click-Bait-Haven.git
+https://github.com/DelyanNikolov/GardeningCareServicesApp.git
 ```
 
 
