@@ -80,6 +80,7 @@ class ServiceDetailsPage(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['review_form'] = ReviewForm()
+
         # Calculate full stars and empty stars for each review
         reviews = self.object.service_reviews.all()
         context['reviews_with_stars'] = [
@@ -97,30 +98,32 @@ class ServiceDetailsPage(DetailView):
         form = ReviewForm(request.POST)
 
         if not request.user.is_authenticated:
-            raise PermissionDenied("You must be logged in to leave a review.")
+            raise PermissionDenied('You must be logged in to leave a review.')
 
         # Check if the user is a homeowner
         try:
             homeowner_profile = HomeOwnerProfile.objects.get(user=request.user)
         except HomeOwnerProfile.DoesNotExist:
-            messages.error(request, "Only homeowners can leave reviews.")
+            messages.error(request, 'Only homeowners can leave reviews.')
             return redirect(reverse('service-details', args=[self.object.id]))
 
         # Check if the user has already reviewed this service
         if Review.objects.filter(service=self.object, user=homeowner_profile).exists():
-            messages.error(request, "You have already reviewed this service.")
+            messages.error(request, 'You have already reviewed this service.')
             return redirect(reverse('service-details', args=[self.object.id]))
 
         if form.is_valid():
             review = form.save(commit=False)
             review.service = self.object
             review.user = homeowner_profile
+
             try:
                 review.save()
-                messages.success(request, "Your review has been submitted.")
+                messages.success(request, 'Your review has been submitted.')
                 return redirect(reverse('service-details', args=[self.object.id]))
+
             except IntegrityError:
-                messages.error(request, "You have already reviewed this service.")
+                messages.error(request, 'You have already reviewed this service.')
                 return redirect(reverse('service-details', args=[self.object.id]))
         else:
             # If the form is invalid, re-render the page with form errors
@@ -140,7 +143,7 @@ class ServiceEditPage(LoginRequiredMixin, UpdateView):
 
         # Only owner of the service or user with permission are authorised to edit
         if service.provider.user != self.request.user and not self.request.user.has_perm(self.permission):
-            raise PermissionDenied("You are not authorized to edit this service.")
+            raise PermissionDenied('You are not authorized to edit this service.')
         return service
 
     def get_success_url(self):
@@ -159,7 +162,7 @@ class ServiceDeletePage(LoginRequiredMixin, DeleteView):
 
         # Only owner of the service or user with permission are authorised to edit
         if service.provider.user != self.request.user and not self.request.user.has_perm(self.permission):
-            raise PermissionDenied("You are not authorized to delete this service.")
+            raise PermissionDenied('You are not authorized to delete this service.')
         return service
 
 
@@ -167,7 +170,7 @@ class ServiceDeletePage(LoginRequiredMixin, DeleteView):
 def moderation_dashboard(request):
     # Only users with permissions can access
     if not request.user.has_perm('services.view_review'):
-        raise PermissionDenied("You are not authorized to access this page.")
+        raise PermissionDenied('You are not authorized to access this page.')
 
     pending_reviews = Review.objects.filter(is_approved=False)
     categories = ServiceCategory.objects.all()
@@ -183,7 +186,7 @@ def moderation_dashboard(request):
 def approve_review(request, pk):
     # Only users with permissions can access
     if not request.user.has_perm('services.change_review'):
-        raise PermissionDenied("You are not authorized to access this page.")
+        raise PermissionDenied('You are not authorized to access this page.')
 
     review = get_object_or_404(Review, pk=pk)
     review.is_approved = True
@@ -195,7 +198,7 @@ def approve_review(request, pk):
 def delete_review(request, pk):
     # Only users with permissions can access
     if not request.user.has_perm('services.delete_review'):
-        raise PermissionDenied("You are not authorized to access this page.")
+        raise PermissionDenied('You are not authorized to access this page.')
 
     review = get_object_or_404(Review, pk=pk)
     review.delete()

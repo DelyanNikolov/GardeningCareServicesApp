@@ -17,4 +17,4 @@ class AppUserCreationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['user_type'].label = "You are a:"
+        self.fields['user_type'].label = 'You are a:'
