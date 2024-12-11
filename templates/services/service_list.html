@@ -14,17 +14,21 @@
             <!-- Service Photo -->
             {% if service.photo %}
             <div class="aspect-w-4 aspect-h-3">
-                <img 
+                <a href="{% url 'service-details' service.pk %}">
+                <img
                     src="{{ service.photo.url }}"
-                    alt="{{ service.name }}" 
+                    alt="{{ service.name }}"
                     class="w-full h-full object-cover">
+                </a>
             </div>
             {% else %}
             <div class="aspect-w-4 aspect-h-3">
+                <a href="{% url 'service-details' service.pk %}">
                 <img 
                     src="{% static 'media/gardening_default_pic.jpg' %}" 
                     alt="{{ service.name }}" 
                     class="w-full h-full object-cover">
+                </a>
             </div>
             {% endif %}
             <!-- Service Details -->

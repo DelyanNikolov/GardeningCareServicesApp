@@ -41,6 +41,9 @@
             <!-- Authentication Links -->
             <div class="flex items-center space-x-4">
                 {% if user.is_authenticated %}
+                    <div class="user-email">
+                        <p>Welcome, {{ user.email }}</p>
+                    </div>
                     <!-- Profile Link -->
                     {% if user.user_type == 'Homeowner' %}
                         <a href="{% url 'homeowner-profile' user.homeownerprofile.pk %}" class="px-4 py-2 hover:bg-green-600 rounded">My Profile</a>

@@ -26,6 +26,7 @@
         <div>
             {{ form.photo.label_tag }}
             {{ form.photo|add_class:"border border-gray-300 focus:border-green-700 focus:ring-green-700 rounded w-full px-3 py-2" }}
+             <p class="text-red-700">{{ form.photo.help_text }}</p>
         </div>
 
         <!-- Service Name -->

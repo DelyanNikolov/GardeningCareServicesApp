@@ -1,7 +1,9 @@
 # GardeningCareServicesApp
 My Django project for SoftUni Python web - september 2024 final
 A basic web app for sharing gardening services. Users can browse listed services by registered providers. If they are logged in can rate and comment services.
-In the app are implemented moderation roles for easy comment, and profile management.
+In the app are implemented moderation roles for easy comment, and profile management.  
+The app is deployed:  
+https://gardeningcareservices-eag6etcgafccgmd7.italynorth-01.azurewebsites.net
 ---
 
 ## General Requirements
@@ -33,10 +35,10 @@ pip install -r requirements.txt
 At the root level of the project (where `manage.py` is located), create a `.env` file using this template:
 ```env
 # Django secret key
-# You dont need to set this or change it if you are testing
-# you can read the comment in the settings.py if you are wondering
-# why I left it here
-SECRET_KEY=django-insecure-zlv-0v4xsdk5&ppexf6ndep&1pm%%3-r59mk-xfckdq+y$b-wu
+# I know this is a security issue but the project is late and i must show part of the secret info
+# Sorry I should hide my secrets early
+
+SECRET_KEY=django-insecure-78_fhen6h0!_ki!5w7@cnv((^y$h8)qumwlsi1w(4(a)pein9b
 
 # Debug mode
 DEBUG=True
@@ -67,13 +69,13 @@ http://localhost:8000/
 
 ## User Roles and Permissions
 
-The web app features the following  users, each with its own permissions:
+The web app features the following users, each with its own permissions:
 
 ### 1. Anonymous Users
 - View and search services, view providers profiles.
 - Register and sign in.
 
-### 2. Home owner users:
+### 2. Homeowner users:
 - All anonymous user permissions.
 - Can Edit/Delete their profile in the app.
 - Only one comment and rating per profile.
@@ -81,7 +83,7 @@ The web app features the following  users, each with its own permissions:
 ### 3. Service provider users
 - All anonymous user permissions.
 - Can Edit/Delete their profile in the app.
-- Can Add/Edit/Delete their services trough their profile page.
+- Can Add/Edit/Delete their services in their profile page.
 - They can not comment or rate gardening services.
 
 ### 4. Moderators  (users with the moderator permissions )
@@ -96,21 +98,34 @@ The web app features the following  users, each with its own permissions:
 
 ### 6. Superuser
 - All staff permissions.
-- Full CRUD on all users, articles, and comments.
+- Full CRUD on all users, services, categories, and reviews.
 
 ---
 
 ## Testing User Accounts
 
-Pre-generated user accounts are provided for testing purposes:
+### Groups:  
+#### (Prefilled for testing on production only)
+#### Moderators
+- CRUD operations for reviews.
+- CRUD operations for Service category.
 
-| Role                 | Email                        | Password    |
-|----------------------|------------------------------|-------------|
-| Superuser            | admin@admin.com              |   admin     |
-| Homeownrer           | homeowner@test.com           |  12home34   |
-| Provider             | provider@test.com            | 12provider34|
-| Moderator            | moderator@test.com           |12moderator34|
-| Administrator        | administrator@test.com       | 12admin34   |
+#### Administrators
+- All Moderators permissions.
+- CRUD operations for Homeowner profiles.
+- CRUD operations for Service provider profiles.
+- CRUD operations for Services.
+
+
+Pre-generated user accounts are provided for testing purposes (on production only):
+
+| Role                 | Email                        | Password  |
+|----------------------|------------------------------|-----------|
+| Superuser            | admin@admin.com              | admin     |
+| Homeownrer           | homeowner@test.com           | 12home34  |
+| Provider             | provider@test.com            | 12test34  |
+| Moderator            | moderator@test.com           | 12moder34 |
+| Administrator        | administrator@test.com       | 12admin34 |
 
 ---
 
@@ -120,7 +135,7 @@ Pre-generated user accounts are provided for testing purposes:
 - **Dynamic Homepage**: Displays public home or moderation for users with different permissions.
 - **Services Search**: Basic search bar.
 - **Pagination**: Available on multiple pages.
-- **Create/Edit/Delete Service category build with REST
+- **Create/Edit/Delete** Service category build with REST.
 
 ### Security
 - Secure permissions with checks and permission mixins.
@@ -131,5 +146,5 @@ Pre-generated user accounts are provided for testing purposes:
 - Advanced filtering and search options.
 
 ### Tests
-- Phone number validator tests
-- Services: approve review, service, delete, service details
+- Phone number validator tests.
+- Services views: approve review, service, delete, service details.

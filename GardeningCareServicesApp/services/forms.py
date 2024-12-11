@@ -7,6 +7,9 @@ class BaseServiceForm(forms.ModelForm):
     class Meta:
         model = Service
         fields = ['name', 'description', 'category', 'price', 'photo']
+        help_texts = {
+            'photo': 'File limit: 1MB',
+        }
 
 
 class ServiceAddForm(BaseServiceForm):
@@ -20,4 +23,4 @@ class ServiceEditForm(BaseServiceForm):
 class ServiceCategoryForm(forms.ModelForm):
     class Meta:
         model = ServiceCategory
-        fields = ['name', 'description',]
+        fields = ['name', 'description', ]

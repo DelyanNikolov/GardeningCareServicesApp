@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render
 
 # Create your views here.
@@ -18,23 +19,31 @@ class HomeOwnerProfilePage(DetailView):
 
 
 class HomeOwnerProfileEditPage(LoginRequiredMixin, UpdateView):
+    permission_required = 'homeowners.change_profile'
     model = HomeOwnerProfile
     form_class = HomeOwnerProfileForm
     template_name = 'homeowners/homeowner_edit.html'
 
     def get_object(self, queryset=None):
-        # Ensure the logged-in user can only edit their own profile
-        return get_object_or_404(HomeOwnerProfile, user=self.request.user)
+        # Allow access if the user is the profile owner or has the required permission
+        profile = get_object_or_404(HomeOwnerProfile, pk=self.kwargs['pk'])
+        if self.request.user != profile.user and not self.request.user.has_perm(self.permission_required):
+            raise PermissionDenied("You are not authorized to edit this profile.")
+        return profile
 
     def get_success_url(self):
         return reverse_lazy('homeowner-profile', kwargs={'pk': self.object.pk})
 
 
 class HomeOwnerProfileDeletePage(LoginRequiredMixin, DeleteView):
+    permission_required = 'homeowners.delete_profile'
     model = HomeOwnerProfile
     template_name = 'homeowners/homeowner_delete.html'
     success_url = reverse_lazy('home')
 
     def get_object(self, queryset=None):
-        # Ensure the logged-in user can only delete their own profile
-        return get_object_or_404(HomeOwnerProfile, user=self.request.user)
+        # Allow access if the user is the profile owner or has the required permission
+        profile = get_object_or_404(HomeOwnerProfile, pk=self.kwargs['pk'])
+        if self.request.user != profile.user and not self.request.user.has_perm(self.permission_required):
+            raise PermissionDenied("You are not authorized to edit this profile.")
+        return profile
