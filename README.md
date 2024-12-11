@@ -127,5 +127,9 @@ Pre-generated user accounts are provided for testing purposes:
 - User-uploaded images are validated.
 
 ### Custom Admin Site
-  - Easy groups, permissions and roles management.
-  - Advanced filtering and search options.
+- Easy groups, permissions and roles management.
+- Advanced filtering and search options.
+
+### Tests
+- Phone number validator tests
+- Services: approve review, service, delete, service details
