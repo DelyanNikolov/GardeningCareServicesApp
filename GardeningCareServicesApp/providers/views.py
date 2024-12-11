@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
@@ -69,7 +69,7 @@ class ProviderProfilePage(DetailView):
         return context
 
 
-class ProviderEditPage(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+class ProviderEditPage(LoginRequiredMixin, UpdateView):
     model = ServiceProviderProfile
     template_name = 'providers/provider_edit.html'
     form_class = ServiceProviderProfileForm
@@ -86,7 +86,7 @@ class ProviderEditPage(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         return reverse_lazy('provider-profile', kwargs={'pk': self.object.pk})
 
 
-class ProfileDeletePage(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+class ProfileDeletePage(LoginRequiredMixin, DeleteView):
     model = ServiceProviderProfile
     template_name = 'providers/profile_delete_confirm.html'
     success_url = reverse_lazy('home')

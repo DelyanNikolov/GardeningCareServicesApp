@@ -60,7 +60,10 @@
                 <input type="file" id="id_photo" name="photo"
                        class="mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm">
                 {% if form.photo.value %}
+                <p class="text-red-700">{{ form.photo.help_text }}</p>
                 <img src="{{ form.photo.value.url }}" alt="{{ form.photo.value.name }}" class="mt-4 w-32 h-32 object-cover">
+                    
+
                 {% endif %}
                 {% for error in form.photo.errors %}
                 <p class="text-sm text-red-600">{{ error }}</p>
