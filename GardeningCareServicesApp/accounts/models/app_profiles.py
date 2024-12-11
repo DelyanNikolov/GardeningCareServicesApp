@@ -65,7 +65,7 @@ class ServiceProviderProfile(models.Model):
         self.save()
 
     def __str__(self):
-        return f"Service Provider Profile for {self.user.email}"
+        return f'Service Provider Profile for {self.user.email}'
 
 
 class HomeOwnerProfile(models.Model):
@@ -107,7 +107,7 @@ class HomeOwnerProfile(models.Model):
         if self.first_name and self.last_name:
             return self.first_name + " " + self.last_name
 
-        return self.first_name or self.last_name or "Anonymous"
+        return self.first_name or self.last_name or 'Anonymous'
 
     def __str__(self):
-        return f"Homeowner Profile for {self.user.email}"
+        return f'Homeowner Profile for {self.user.email}'

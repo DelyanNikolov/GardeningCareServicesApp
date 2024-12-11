@@ -25,7 +25,7 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
         default=False,
     )
 
-    USERNAME_FIELD = "email"
+    USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
     objects = AppUserManager()

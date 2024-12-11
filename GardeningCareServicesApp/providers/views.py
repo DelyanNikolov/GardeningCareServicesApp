@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse, reverse_lazy
+from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView
 
 from GardeningCareServicesApp.accounts.models import ServiceProviderProfile
@@ -95,6 +95,7 @@ class ProfileDeletePage(LoginRequiredMixin, PermissionRequiredMixin, DeleteView)
     def get_object(self, queryset=None):
         # Allow access if the user is the profile owner or has the required permission
         profile = get_object_or_404(ServiceProviderProfile, pk=self.kwargs['pk'])
+
         if self.request.user != profile.user and not self.request.user.has_perm(self.permission_required):
             raise PermissionDenied("You are not authorized to delete this profile.")
         return profile
