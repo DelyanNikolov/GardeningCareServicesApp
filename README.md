@@ -2,8 +2,6 @@
 My Django project for SoftUni Python web - september 2024 final
 A basic web app for sharing gardening services. Users can browse listed services by registered providers. If they are logged in can rate and comment services.
 In the app are implemented moderation roles for easy comment, and profile management.  
-The app is deployed:  
-https://gardeningcareservices-eag6etcgafccgmd7.italynorth-01.azurewebsites.net
 ---
 
 ## General Requirements
